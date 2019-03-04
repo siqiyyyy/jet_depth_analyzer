@@ -47,7 +47,7 @@ def get_params(numerator,denominator,ipt,index=0):
 	cut_arg=denominator+">"+str(_pt[ipt])+" && "+denominator+"<"+str(_pt[ipt+1])+" && abs(genjet_eta)>="+str(_eta[0])+" && abs(genjet_eta)<"+str(_eta[1])+rho_cut
 	print("cut="+cut_arg)
 	t_in.Draw(numerator+"/"+denominator+">>shape",cut_arg,"goff")
-	mean,mean_error,sigma,sigma_error = ConvFit(shape ,False,"ratio",numerator,folder+"/fit","FIT_"+numerator+"_"+str(_pt[ipt])+"_"+str(_pt[ipt+1])+"_eta_"+str(_eta[0])+"_"+str(_eta[1])+"_rho_"+str(_rho[0])+"_"+str(_rho[1]))
+	mean,mean_error,sigma,sigma_error = GaussFit(shape ,False,"ratio",numerator,folder+"/fit","FIT_"+numerator+"_"+str(_pt[ipt])+"_"+str(_pt[ipt+1])+"_eta_"+str(_eta[0])+"_"+str(_eta[1])+"_rho_"+str(_rho[0])+"_"+str(_rho[1]))
 	h_mean[index].SetBinContent(ipt+1,mean)
 	h_mean[index].SetBinError(ipt+1,mean_error)
 	#scale correct the resolution
@@ -98,7 +98,7 @@ latex2.Draw("same")
 
 legend=ROOT.TLegend(0.60,0.65,0.95,.85)
 legend.AddEntry(h_sigma[0],"pf+CHS","lp")
-legend.AddEntry(h_sigma[1],"puppi","lp")
+legend.AddEntry(h_sigma[1],"pf+PUPPI","lp")
 legend.Draw("same")
 c.SaveAs(folder+"FIT_sigma_eta_"+args.eta+"_rho_"+args.rho+".png")
 c.SaveAs(folder+"FIT_sigma_eta_"+args.eta+"_rho_"+args.rho+".pdf")
