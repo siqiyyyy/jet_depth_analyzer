@@ -54,25 +54,25 @@ def get_met_params(rg): #given a phase space range, return response, sigma u_pll
 	params["sigma_pll_pf"]=shape_pf.GetStdDev()
 	params["sigma_pll_pf_error"]=shape_pf.GetStdDevError()
 	params["resolution_pll_pf"]=params["sigma_pll_pf"]/params["response_pf"]
-	params["resolution_pll_pf_error"]=sqrt((params["sigma_pll_pf_error"]/params["sigma_pll_pf"])**2+(params["response_pf_error"]/params["response_pf"])**2)
+	params["resolution_pll_pf_error"]=sqrt((params["sigma_pll_pf_error"]/params["sigma_pll_pf"])**2+(params["response_pf_error"]/params["response_pf"])**2)*params["resolution_pll_pf"]
 	t_in.Draw("u_pll_puppi>>shape_puppi",rg)
 	if shape_puppi.GetStdDev()<=0: return None
 	params["sigma_pll_puppi"]=shape_puppi.GetStdDev()
 	params["sigma_pll_puppi_error"]=shape_puppi.GetStdDevError()
 	params["resolution_pll_puppi"]=params["sigma_pll_puppi"]/params["response_puppi"]
-	params["resolution_pll_puppi_error"]=sqrt((params["sigma_pll_puppi_error"]/params["sigma_pll_puppi"])**2+(params["response_puppi_error"]/params["response_puppi"])**2)
+	params["resolution_pll_puppi_error"]=sqrt((params["sigma_pll_puppi_error"]/params["sigma_pll_puppi"])**2+(params["response_puppi_error"]/params["response_puppi"])**2)*params["resolution_pll_puppi"]
 	t_in.Draw("u_prp_pf>>shape_pf",rg)
 	if shape_pf.GetStdDev()<=0: return None
 	params["sigma_prp_pf"]=shape_pf.GetStdDev()
 	params["sigma_prp_pf_error"]=shape_pf.GetStdDevError()
 	params["resolution_prp_pf"]=params["sigma_prp_pf"]/params["response_pf"]
-	params["resolution_prp_pf_error"]=sqrt((params["sigma_prp_pf_error"]/params["sigma_prp_pf"])**2+(params["response_pf_error"]/params["response_pf"])**2)
+	params["resolution_prp_pf_error"]=sqrt((params["sigma_prp_pf_error"]/params["sigma_prp_pf"])**2+(params["response_pf_error"]/params["response_pf"])**2)*params["resolution_prp_pf"]
 	t_in.Draw("u_prp_puppi>>shape_puppi",rg)
 	if shape_puppi.GetStdDev()<=0: return None
 	params["sigma_prp_puppi"]=shape_puppi.GetStdDev()
 	params["sigma_prp_puppi_error"]=shape_puppi.GetStdDevError()
 	params["resolution_prp_puppi"]=params["sigma_prp_puppi"]/params["response_puppi"]
-	params["resolution_prp_puppi_error"]=sqrt((params["sigma_prp_puppi_error"]/params["sigma_prp_puppi"])**2+(params["response_puppi_error"]/params["response_puppi"])**2)
+	params["resolution_prp_puppi_error"]=sqrt((params["sigma_prp_puppi_error"]/params["sigma_prp_puppi"])**2+(params["response_puppi_error"]/params["response_puppi"])**2)*params["resolution_prp_puppi"]
 	plot_hists([shape_pf,shape_puppi], legend_title_list=["PF met","PUPPI MET"], x_title="u_{#perp}(GeV)", y_title="Events/5GeV", plot_name="fit/uprp"+rg,text_description=rg)
 	return params
 	
@@ -99,9 +99,10 @@ h_resolution_prp_npv =  [ ROOT.TH1F("h_resolution_prp_npv_pf" , "h_resolution_pr
 
 #Make pf vs. puppi plots
 ROOT.gStyle.SetOptStat(0) #tdrStyle not in effect?
-def plot_hists(hist_list, title="", legend_title_list=None, x_title="", y_title="", text_description=None, plot_name=None):
+def plot_hists(hist_list, title="", legend_title_list=None, x_title="", y_title="", text_description=None, plot_name=None, limits=None):
 	colors=[ROOT.kCyan+1,ROOT.kBlue+1,ROOT.kMagenta+1,ROOT.kRed+1,ROOT.kOrange,ROOT.kYellow+1,ROOT.kGreen+1,ROOT.kGray]
 	canv = ROOT.TCanvas("canv","canv")
+	mg=ROOT.TMultiGraph() #Use a multiGraph to auto adjust the frame size:
 	base_hist = hist_list[0]
 	base_hist.SetTitle(title)
 	base_hist.GetXaxis().SetTitle(x_title)
@@ -110,16 +111,17 @@ def plot_hists(hist_list, title="", legend_title_list=None, x_title="", y_title=
 	base_hist.SetLineColor(colors[0])
 	base_hist.SetMarkerStyle(1)
 	base_hist.SetMarkerSize(0.8)
-	max_value=(max([i.GetMaximum() for i in hist_list]))
-	min_value=(max([i.GetMinimum() for i in hist_list]))
-	base_hist.GetYaxis().SetRangeUser(min_value-(max_value-min_value)/10, max_value+(max_value-min_value)/10)
-	base_hist.Draw()
+	mg.Add(ROOT.TGraphErrors(base_hist))
 	if len(hist_list)>1:
 		for ihist,hist in enumerate(hist_list[1:]):
 			hist.SetMarkerStyle(1)
 			hist.SetMarkerSize(0.8)
 			hist.SetLineColor(colors[ihist+1])
-			hist.Draw("same")
+			mg.Add(ROOT.TGraphErrors(hist))
+	if limits != None:
+		mg.SetMinimum(limits[0])
+		mg.SetMaximum(limits[1])
+	mg.Draw("AP")
 	if(text_description):
 		latex = ROOT.TLatex()
 		latex.SetNDC()
@@ -215,21 +217,21 @@ for inpv,npv in enumerate(_npv[:-1]):
 
 
 
-plot_hists(h_response_pt, legend_title_list=["PF MET", "PUPPI MET"], x_title="q_{T} [GeV]", y_title="-<u_{||}>/<q_{T}>", plot_name="met_response_pt")
+plot_hists(h_response_pt, legend_title_list=["PF MET", "PUPPI MET"], x_title="q_{T} [GeV]", y_title="-<u_{||}>/<q_{T}>", plot_name="met_response_pt", limits=[0,2])
 plot_hists(h_sigma_pll_pt, legend_title_list=["PF MET", "PUPPI MET"], x_title="q_{T} [GeV]", y_title="#sigma (u_{||}) [GeV]", plot_name="met_sigma_pll_pt")
 plot_hists(h_sigma_prp_pt, legend_title_list=["PF MET", "PUPPI MET"], x_title="q_{T} [GeV]", y_title="#sigma (u_{#perp }) [GeV]", plot_name="met_sigma_prp_pt")
-plot_hists(h_resolution_pll_pt, legend_title_list=["PF MET", "PUPPI MET"], x_title="q_{T} [GeV]", y_title="#sigma (u_{||})/response [GeV]", plot_name="met_resolution_pll_pt")
-plot_hists(h_resolution_prp_pt, legend_title_list=["PF MET", "PUPPI MET"], x_title="q_{T} [GeV]", y_title="#sigma (u_{#perp })/response [GeV]", plot_name="met_resolution_prp_pt")
-plot_hists(h_response_eta, legend_title_list=["PF MET", "PUPPI MET"], x_title="#eta", y_title="-<u_{||}>/<q_{T}>", plot_name="met_response_eta")
+plot_hists(h_resolution_pll_pt, legend_title_list=["PF MET", "PUPPI MET"], x_title="q_{T} [GeV]", y_title="#sigma (u_{||})/response [GeV]", plot_name="met_resolution_pll_pt", limits=[0,70])
+plot_hists(h_resolution_prp_pt, legend_title_list=["PF MET", "PUPPI MET"], x_title="q_{T} [GeV]", y_title="#sigma (u_{#perp })/response [GeV]", plot_name="met_resolution_prp_pt", limits=[0,70])
+plot_hists(h_response_eta, legend_title_list=["PF MET", "PUPPI MET"], x_title="#eta", y_title="-<u_{||}>/<q_{T}>", plot_name="met_response_eta", limits=[0,2])
 plot_hists(h_sigma_pll_eta, legend_title_list=["PF MET", "PUPPI MET"], x_title="#eta", y_title="#sigma (u_{||}) [GeV]", plot_name="met_sigma_pll_eta")
 plot_hists(h_sigma_prp_eta, legend_title_list=["PF MET", "PUPPI MET"], x_title="#eta", y_title="#sigma (u_{#perp }) [GeV]", plot_name="met_sigma_prp_eta")
-plot_hists(h_resolution_pll_eta, legend_title_list=["PF MET", "PUPPI MET"], x_title="#eta", y_title="#sigma (u_{||})/response [GeV]", plot_name="met_resolution_pll_eta")
-plot_hists(h_resolution_prp_eta, legend_title_list=["PF MET", "PUPPI MET"], x_title="#eta", y_title="#sigma (u_{#perp })/response [GeV]", plot_name="met_resolution_prp_eta")
-plot_hists(h_response_npv, legend_title_list=["PF MET", "PUPPI MET"], x_title="Number of vertices", y_title="-<u_{||}>/<q_{T}>", plot_name="met_response_npv")
+plot_hists(h_resolution_pll_eta, legend_title_list=["PF MET", "PUPPI MET"], x_title="#eta", y_title="#sigma (u_{||})/response [GeV]", plot_name="met_resolution_pll_eta", limits=[0,500])
+plot_hists(h_resolution_prp_eta, legend_title_list=["PF MET", "PUPPI MET"], x_title="#eta", y_title="#sigma (u_{#perp })/response [GeV]", plot_name="met_resolution_prp_eta", limits=[0,600])
+plot_hists(h_response_npv, legend_title_list=["PF MET", "PUPPI MET"], x_title="Number of vertices", y_title="-<u_{||}>/<q_{T}>", plot_name="met_response_npv", limits=[0,2])
 plot_hists(h_sigma_pll_npv, legend_title_list=["PF MET", "PUPPI MET"], x_title="Number of vertices", y_title="#sigma (u_{||}) [GeV]", plot_name="met_sigma_pll_npv")
 plot_hists(h_sigma_prp_npv, legend_title_list=["PF MET", "PUPPI MET"], x_title="Number of vertices", y_title="#sigma (u_{#perp }) [GeV]", plot_name="met_sigma_prp_npv")
-plot_hists(h_resolution_pll_npv, legend_title_list=["PF MET", "PUPPI MET"], x_title="Number of vertices", y_title="#sigma (u_{||})/response [GeV]", plot_name="met_resolution_pll_npv")
-plot_hists(h_resolution_prp_npv, legend_title_list=["PF MET", "PUPPI MET"], x_title="Number of vertices", y_title="#sigma (u_{#perp })/response [GeV]", plot_name="met_resolution_prp_npv")
+plot_hists(h_resolution_pll_npv, legend_title_list=["PF MET", "PUPPI MET"], x_title="Number of vertices", y_title="#sigma (u_{||})/response [GeV]", plot_name="met_resolution_pll_npv", limits=[0,130])
+plot_hists(h_resolution_prp_npv, legend_title_list=["PF MET", "PUPPI MET"], x_title="Number of vertices", y_title="#sigma (u_{#perp })/response [GeV]", plot_name="met_resolution_prp_npv", limits=[0,130])
 
 #Make some plots directly from TTree:
 c1=ROOT.TCanvas("c1","c1")
