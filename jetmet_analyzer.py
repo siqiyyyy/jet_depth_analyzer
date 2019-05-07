@@ -6,6 +6,7 @@ sys.argv = [ '-b-' ]
 import ROOT
 ROOT.gROOT.SetBatch(True)
 sys.argv = oldargv
+PLOTRAW=True #Set True if you want only raw pt from met objects
 
 from FWCore.ParameterSet.VarParsing import VarParsing
 options = VarParsing('python')
@@ -14,6 +15,7 @@ options = VarParsing('python')
 options.inputFiles="../step3_inMINIAODSIM.root"
 options.outputFile="jetmetNtuples.root"
 options.maxEvents=-1
+
 
 #overwrite if given any command line arguments
 options.parseArguments()
@@ -392,8 +394,12 @@ for ievent,event in enumerate(events):
 	h_Zmass.Fill(Zvector.M())
 	if Zvector.M()<75 or Zvector.M()>105: continue
 	Zmass[0]=Zvector.M()
-	pfmetvector = mets.product().front().p4()
-	puppimetvector = pmets.product().front().p4()
+	if PLOTRAW:
+		pfmetvector = mets.product().front().uncorP4()
+		puppimetvector = pmets.product().front().uncorP4()
+	else:
+		pfmetvector = mets.product().front().corP4()
+		puppimetvector = pmets.product().front().corP4()
 	pfrecoil = pfmetvector + Zvector
 	puppirecoil = puppimetvector + Zvector
 	qt[0] = Zvector.pt()
