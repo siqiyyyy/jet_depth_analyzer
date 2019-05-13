@@ -79,6 +79,7 @@ def print_same_line(s):
 h_qt = ROOT.TH1F("qt","qt",40,0,200)
 h_Zmass = ROOT.TH1F("Zmass","Zmass",25,50,150)
 h_qeta = ROOT.TH1F("Zeta","Zeta",40,-5,5)
+h_qrapidity = ROOT.TH1F("Zrapidity","Zrapidity",60,-3,3)
 h_upll = ROOT.TH1F("upll","upll",40,-200,200)
 h_upllqt = ROOT.TH1F("upllqt","upll+qt",40,-200,200)
 h_uprp = ROOT.TH1F("uprp","uprp",40,-200,200)
@@ -409,6 +410,7 @@ for ievent,event in enumerate(events):
 	u_prp_pf[0] = pfmetvector.pt() * sin(Zvector.phi()-pfmetvector.phi())
 	u_prp_puppi[0] = puppimetvector.pt() * sin(Zvector.phi()-puppimetvector.phi())
 	h_qeta.Fill(Zvector.eta())
+	h_qrapidity.Fill(Zvector.Rapidity())
 	h_qt.Fill(qt[0])
 	h_upll.Fill(u_pll_pf[0])
 	h_upllqt.Fill(u_pll_pf[0]+qt[0])
@@ -419,6 +421,7 @@ for ievent,event in enumerate(events):
 canv = ROOT.TCanvas("canv","canv",1000,1000);
 h_Zmass.Draw();canv.Print("result/zmass.png");
 h_qeta.Draw();canv.Print("result/qeta.png");
+h_qrapidity.Draw();canv.Print("result/qrapidity.png");
 h_qt.Draw();canv.Print("result/qt.png");
 h_upll.Draw();canv.Print("result/upll.png");
 h_upllqt.Draw();canv.Print("result/upllqt.png");

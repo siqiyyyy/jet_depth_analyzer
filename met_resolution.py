@@ -19,9 +19,9 @@ from helper_functions import *
 
 f_in = ROOT.TFile("jetmetNtuples.root","READ")
 t_in = f_in.Get("events")
-_pt = [0,5,10,15,20,25,30,40,50,60,80,100]
-_eta = np.arange(-5,5,0.2)
-_npv = np.arange(0,70,2)
+_pt = [0,10,20,25,30,40,50,60,80,100]
+_eta = np.arange(-5,5,0.4)
+_npv = np.arange(20,64,4)
 folder = "result"
 os.system("mkdir -p "+folder)
 os.system("mkdir -p "+folder+"/fit")
@@ -103,20 +103,13 @@ def plot_hists(hist_list, title="", legend_title_list=None, x_title="", y_title=
 	colors=[ROOT.kCyan+1,ROOT.kBlue+1,ROOT.kMagenta+1,ROOT.kRed+1,ROOT.kOrange,ROOT.kYellow+1,ROOT.kGreen+1,ROOT.kGray]
 	canv = ROOT.TCanvas("canv","canv")
 	mg=ROOT.TMultiGraph() #Use a multiGraph to auto adjust the frame size:
-	base_hist = hist_list[0]
-	base_hist.SetTitle(title)
-	base_hist.GetXaxis().SetTitle(x_title)
-	base_hist.GetYaxis().SetTitle(y_title)
-	base_hist.SetLineWidth(2)
-	base_hist.SetLineColor(colors[0])
-	base_hist.SetMarkerStyle(1)
-	base_hist.SetMarkerSize(0.8)
-	mg.Add(ROOT.TGraphErrors(base_hist))
-	if len(hist_list)>1:
-		for ihist,hist in enumerate(hist_list[1:]):
+	mg.SetTitle(title+"; "+x_title+"; "+y_title+";") 
+	if len(hist_list)>0:
+		for ihist,hist in enumerate(hist_list):
+			hist.SetLineWidth(2)
 			hist.SetMarkerStyle(1)
 			hist.SetMarkerSize(0.8)
-			hist.SetLineColor(colors[ihist+1])
+			hist.SetLineColor(colors[ihist])
 			mg.Add(ROOT.TGraphErrors(hist))
 	if limits != None:
 		mg.SetMinimum(limits[0])
