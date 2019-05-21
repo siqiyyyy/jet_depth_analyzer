@@ -1,6 +1,26 @@
-##codes to measure hcal depth distribution of jets##
+## codes to measure hcal depth distribution of jets
 
-###Overview of files###
-jetmet_analyzer.py run on MINIAOD and produce a flat root file named as jetmetNtuples.root
-jet_resolution.py measures jet resolution for pf+CHS jets and pf+PUPPI jets
-plot_depth.py takes the jetmetNtuples.root and plot depth distributions for jets
+This code is tested on CMSSW_10_5_0 with added depth segmentation
+Modify `jetemet_tree.py` for desired variables
+
+### Produce flat Ntuples
+Make a list of files stored in files.txt
+run: `python jetmet_analyzer inputFiles=files.txt`
+This will read all files from `files.txt` and produce an flat root file called `jetmetNtuples.root`
+
+### Make jet resolution plots
+run `python jet_resolution.py`
+This will read from `jetmetNtuples.root` and make plots in the `result/` directory
+
+### Make MET resolution plots
+For ZMM samples only!
+run `python met_resolution.py`
+This will read from `jetmetNtuples.root` and make plots in the `result/` directory
+
+### Plot Hcal depth distributions for jets
+`python plot_depth.py`
+Also read from `jetmetNtuples.root`
+
+### Plot Hcal depth distributions for pf particles
+`python plot_pf_distributions_in_jets.py inputFiles=files.txt`
+This need to read from MINIAOD files
