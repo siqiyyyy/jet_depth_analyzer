@@ -9,7 +9,7 @@ setTDRStyle()
 
 f_in = ROOT.TFile("jetmetNtuples.root","READ")
 t = f_in.Get("events")
-_pt = np.array([25,50,200,2000])
+_pt = np.array([25,50,80,200])
 _eta = np.array([1.3,2.1,2.5,3.0,5.0])
 _rho = np.array([0,30,40,70])
 _depth = np.array(range(8))
