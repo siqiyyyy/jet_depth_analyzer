@@ -143,6 +143,20 @@ pmey    = n.zeros(1,dtype=float)
 pmet_phi= n.zeros(1,dtype=float)
 genpmet = n.zeros(1,dtype=float)
 rawpmet = n.zeros(1,dtype=float)
+	#for ZMM sample; met resolution:
+mu1_pt = n.zeros(1,dtype=float)
+mu2_pt = n.zeros(1,dtype=float)
+mu1_eta = n.zeros(1,dtype=float)
+mu2_eta = n.zeros(1,dtype=float)
+mu1_phi = n.zeros(1,dtype=float)
+mu2_phi = n.zeros(1,dtype=float)
+Zmass	= n.zeros(1,dtype=float) # mass of reconstructed Z boson
+qt		= n.zeros(1,dtype=float) # i.e. Z pt
+q_eta	= n.zeros(1,dtype=float)
+u_pll_pf = n.zeros(1,dtype=float) #u parallel 
+u_prp_pf = n.zeros(1,dtype=float) #u perpendicular
+u_pll_puppi = n.zeros(1,dtype=float) #similar but for puppi mets
+u_prp_puppi = n.zeros(1,dtype=float)
     
 def declare_branches(t):
 
@@ -282,6 +296,20 @@ def declare_branches(t):
     t.Branch("pmet_phi", pmet_phi, 'pmet_phi/D')
     t.Branch("genpmet", genpmet, 'genpmet/D')
     t.Branch("rawpmet", rawpmet, 'rawpmet/D')
+
+    t.Branch("Zmass"          , Zmass          , 'Zmass/D')
+    t.Branch("mu1_pt"          , mu1_pt          , 'mu1_pt/D')
+    t.Branch("mu2_pt"          , mu2_pt          , 'mu2_pt/D')
+    t.Branch("mu1_eta"          , mu1_eta          , 'mu1_eta/D')
+    t.Branch("mu2_eta"          , mu2_eta          , 'mu2_eta/D')
+    t.Branch("mu1_phi"          , mu1_phi          , 'mu1_phi/D')
+    t.Branch("mu2_phi"          , mu2_phi          , 'mu2_phi/D')
+    t.Branch("qt"          , qt          , 'qt/D')
+    t.Branch("q_eta"       , q_eta       , 'q_eta/D')
+    t.Branch("u_pll_pf"    , u_pll_pf    , 'u_pll_pf/D')
+    t.Branch("u_prp_pf"    , u_prp_pf    , 'u_prp_pf/D')
+    t.Branch("u_pll_puppi" , u_pll_puppi , 'u_pll_puppi/D')
+    t.Branch("u_prp_puppi" , u_prp_puppi , 'u_prp_puppi/D')
 
 
     print "All branches configured"
