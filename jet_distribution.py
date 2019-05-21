@@ -79,7 +79,7 @@ legend=ROOT.TLegend(0.60,0.65,0.95,.85)
 legend.AddEntry(h_pt[0],"pf+CHS","lp")
 legend.AddEntry(h_pt[1],"pf+PUPPI","lp")
 legend.Draw("same")
-c1.Print("result/sample_pt_distribution.png")
+c1.Print("result/sample_jetpt_distribution.png")
 
 #PU vs LV PT distribution
 c1.SetLogx()
