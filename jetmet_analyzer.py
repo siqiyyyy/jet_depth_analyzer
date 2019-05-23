@@ -27,7 +27,7 @@ for iF,F in enumerate(options.inputFiles):
 		options.inputFiles.pop(iF)
 		with open(F) as f:
 			li_f+=f.read().splitlines()
-options.inputFiles+=li_f
+options.inputFiles=li_f
 print "analyzing files:"
 for F in options.inputFiles: print F
 
