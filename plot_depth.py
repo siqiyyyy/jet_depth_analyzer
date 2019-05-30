@@ -13,7 +13,7 @@ _pt = np.array([25,50,80,200])
 _eta = np.array([1.3,2.1,2.5,3.0,5.0])
 _rho = np.array([0,30,40,70])
 _depth = np.array(range(8))
-_ratio = np.arange(1,5,0.4) #try to plot the distribution of layer2/layer1
+_ratio = np.arange(1.5,3,0.1) #try to plot the distribution of layer2/layer1
 
 ROOT.gStyle.SetOptStat(0)
 
@@ -119,6 +119,8 @@ def plot_hists(hists,filename):
 	for ihist,hist in enumerate(hists):
 		hist[0].SetLineColor(colors[ihist])
 		hist[1].SetLineColor(colors[ihist])
+		hist[0].SetLineWidth(3)
+		hist[1].SetLineWidth(3)
 		hist[1].SetLineStyle(8) #dash line
 		if firstDraw:
 			firstDraw=False
