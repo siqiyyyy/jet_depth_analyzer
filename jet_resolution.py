@@ -35,8 +35,8 @@ def get_jet_params(rg, fit=None):
 	_shape=np.arange(0.1, 5., 0.1)
 	shape_pf = ROOT.TH1F("shape_pf","shape_pf",len(_shape)-1,array('d',_shape))
 	shape_puppi = ROOT.TH1F("shape_puppi","shape_puppi",len(_shape)-1,array('d',_shape))
-	t_in.Draw("rawjet_pt/genjet_pt>>shape_pf",rg,"goff")
-	t_in.Draw("rawpjet_pt/genpjet_pt>>shape_puppi",rg,"goff")
+	t_in.Draw("rawjet_pt/genjet_pt>>shape_pf",rg+"&&rawjet_pt>30","goff")
+	t_in.Draw("rawpjet_pt/genpjet_pt>>shape_puppi",rg+"&&rawpjet_pt>30","goff")
 	params["response_pf"]=abs(shape_pf.GetMean())
 	params["response_pf_error"]=abs(shape_pf.GetMeanError())
 	params["response_puppi"]=abs(shape_puppi.GetMean())
@@ -45,19 +45,19 @@ def get_jet_params(rg, fit=None):
 	params["sigma_pf_error"]=abs(shape_pf.GetStdDevError())
 	params["sigma_puppi"]=abs(shape_puppi.GetStdDev())
 	params["sigma_puppi_error"]=abs(shape_puppi.GetStdDevError())
-	if params["response_pf"]>0: 
+	if params["response_pf"]>0 and params["sigma_pf"]>0: 
 		params["resolution_pf"]=params["sigma_pf"]/params["response_pf"]
 		params["resolution_pf_error"]=sqrt((params["sigma_pf_error"]/params["sigma_pf"])**2+(params["response_pf_error"]/params["response_pf"])**2)*params["resolution_pf"]
 	else: 
 		params["resolution_pf"]=0
 		params["resolution_pf_error"]=0
-	if params["response_puppi"]>0: 
+	if params["response_puppi"]>0 and params["sigma_puppi"]>0: 
 		params["resolution_puppi"]=params["sigma_puppi"]/params["response_puppi"]
 		params["resolution_puppi_error"]=sqrt((params["sigma_puppi_error"]/params["sigma_puppi"])**2+(params["response_puppi_error"]/params["response_puppi"])**2)*params["resolution_puppi"]
 	else: 
 		params["resolution_puppi"]=0
 		params["resolution_puppi_error"]=0
-	plot_hists([shape_pf,shape_puppi], legend_title_list=["PF jet","PUPPI jet"], x_title="Jet p_{T} response", y_title="Events", plot_name="fit/jet_response_"+rg,text_description=rg)
+	plot_hists([shape_pf,shape_puppi], legend_title_list=["PF jet","PUPPI jet"], x_title="jet p_{T}(raw)/genjet p_{T}", y_title="Events", plot_name="fit/jet_response_"+rg,text_description=rg)
 	return params
 
 
@@ -112,7 +112,7 @@ def plot_hists(hist_list, title="", legend_title_list=None, x_title="", y_title=
 
 #call function get_jet_params and set the histograms' bin content
 for ipt,pt in enumerate(_pt[:-1]):
-	params=get_jet_params("qt>"+str(_pt[ipt])+" && qt<"+str(_pt[ipt+1]))
+	params=get_jet_params("genjet_pt>"+str(_pt[ipt])+" && genjet_pt<"+str(_pt[ipt+1]))
 	if params == None: continue
 	h_response_pt[0].SetBinContent(ipt+1,params["response_pf"]);
 	h_response_pt[0].SetBinError(ipt+1,params["response_pf_error"]);
@@ -120,6 +120,9 @@ for ipt,pt in enumerate(_pt[:-1]):
 	h_sigma_pt[0].SetBinError(ipt+1,params["sigma_pf_error"]);
 	h_resolution_pt[0].SetBinContent(ipt+1,params["resolution_pf"]);
 	h_resolution_pt[0].SetBinError(ipt+1,params["resolution_pf_error"]);
+for ipt,pt in enumerate(_pt[:-1]):
+	params=get_jet_params("genpjet_pt>"+str(_pt[ipt])+" && genpjet_pt<"+str(_pt[ipt+1]))
+	if params == None: continue
 	h_response_pt[1].SetBinContent(ipt+1,params["response_puppi"]);
 	h_response_pt[1].SetBinError(ipt+1,params["response_puppi_error"]);
 	h_sigma_pt[1].SetBinContent(ipt+1,params["sigma_puppi"]);
@@ -127,7 +130,7 @@ for ipt,pt in enumerate(_pt[:-1]):
 	h_resolution_pt[1].SetBinContent(ipt+1,params["resolution_puppi"]);
 	h_resolution_pt[1].SetBinError(ipt+1,params["resolution_puppi_error"]);
 for ieta,eta in enumerate(_eta[:-1]):
-	params=get_jet_params("q_eta>"+ "%.1f"%_eta[ieta] +" && q_eta<"+"%.1f"%_eta[ieta+1])
+	params=get_jet_params("genjet_eta>"+ "%.1f"%_eta[ieta] +" && genjet_eta<"+"%.1f"%_eta[ieta+1])
 	if params == None: continue
 	h_response_eta[0].SetBinContent(ieta+1,params["response_pf"]);
 	h_response_eta[0].SetBinError(ieta+1,params["response_pf_error"]);
@@ -135,6 +138,9 @@ for ieta,eta in enumerate(_eta[:-1]):
 	h_sigma_eta[0].SetBinError(ieta+1,params["sigma_pf_error"]);
 	h_resolution_eta[0].SetBinContent(ieta+1,params["resolution_pf"]);
 	h_resolution_eta[0].SetBinError(ieta+1,params["resolution_pf_error"]);
+for ieta,eta in enumerate(_eta[:-1]):
+	params=get_jet_params("genpjet_eta>"+ "%.1f"%_eta[ieta] +" && genpjet_eta<"+"%.1f"%_eta[ieta+1])
+	if params == None: continue
 	h_response_eta[1].SetBinContent(ieta+1,params["response_puppi"]);
 	h_response_eta[1].SetBinError(ieta+1,params["response_puppi_error"]);
 	h_sigma_eta[1].SetBinContent(ieta+1,params["sigma_puppi"]);
